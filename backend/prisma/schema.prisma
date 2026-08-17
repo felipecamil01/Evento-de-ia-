@@ -1,0 +1,111 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(ORGANIZER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  events    Event[]
+}
+
+enum Role {
+  ORGANIZER
+  CLIENT
+  ADMIN
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  name        String
+  type        EventType
+  description String?
+  guestCount  Int
+  date        DateTime?
+  status      EventStatus @default(DRAFT)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  briefings   Briefing[]
+  layouts     Layout[]
+}
+
+enum EventType {
+  WEDDING
+  CORPORATE
+  BIRTHDAY
+  DINNER
+  SHOW
+  OTHER
+}
+
+enum EventStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+model Briefing {
+  id              String   @id @default(uuid())
+  rawText         String   // texto livre do cliente
+  structured      Json     // JSON estruturado retornado pela IA
+  aiModel         String   @default("claude-sonnet-4-6")
+  processingTimeMs Int?
+  createdAt       DateTime @default(now())
+  eventId         String
+  event           Event    @relation(fields: [eventId], references: [id])
+  layout          Layout?
+}
+
+model Layout {
+  id          String         @id @default(uuid())
+  name        String         @default("Layout Principal")
+  canvasW     Int            @default(1200)
+  canvasH     Int            @default(700)
+  version     Int            @default(1)
+  isValidated Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  eventId     String
+  event       Event          @relation(fields: [eventId], references: [id])
+  briefingId  String?        @unique
+  briefing    Briefing?      @relation(fields: [briefingId], references: [id])
+  elements    LayoutElement[]
+}
+
+model LayoutElement {
+  id        String  @id @default(uuid())
+  type      String  // mesa_redonda, palco, pista_danca, etc.
+  label     String
+  x         Float
+  y         Float
+  w         Float
+  h         Float
+  rotation  Float   @default(0)
+  layer     String  // chao | mobiliario | teto
+  color     String?
+  order     Int     @default(0)
+  layoutId  String
+  layout    Layout  @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+}
+
+model ValidationLog {
+  id        String   @id @default(uuid())
+  layoutId  String
+  issues    Json     // array de strings com problemas encontrados
+  passed    Boolean
+  createdAt DateTime @default(now())
+}
