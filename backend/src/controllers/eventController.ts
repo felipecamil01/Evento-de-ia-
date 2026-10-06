@@ -18,6 +18,7 @@ export const getEvents = async (req: any, res: Response) => {
 export const createEvent = async (req: any, res: Response) => {
   try {
     const { name, type, description, guestCount, date } = req.body;
+    if(typeof name !== 'string' || !name.trim() || name.length>120 || type!=='WEDDING' || !Number.isInteger(guestCount) || guestCount<30 || guestCount>150) return res.status(400).json({error:'Informe nome e casamento com 30 a 150 convidados.'});
     const event = await prisma.event.create({
       data: {
         name,

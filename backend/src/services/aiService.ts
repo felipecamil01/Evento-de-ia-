@@ -1,87 +1,34 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-
-const SYSTEM_PROMPT = `Você é um sistema de IA especializado em planejamento espacial de eventos para o EventIA.
-
-O canvas tem largura 1200px e altura 700px. A margem mínima das bordas é 50px.
-Área utilizável: X entre 50 e 1150, Y entre 50 e 650.
-
-Interprete o briefing e retorne um JSON com os elementos JÁ POSICIONADOS no canvas com coordenadas x, y reais.
-
-TIPOS DISPONÍVEIS: mesa_redonda, mesa_retangular, palco, pista_danca, buffet, cadeira, bar, dj, decoracao, entrada, banheiro, iluminacao
-
-TAMANHOS PADRÃO:
-- mesa_redonda: w=70, h=70
-- mesa_retangular: w=100, h=60
-- palco: w=200, h=80
-- pista_danca: w=300, h=250
-- buffet: w=130, h=50
-- cadeira: w=32, h=32
-- bar: w=100, h=55
-- dj: w=80, h=60
-- decoracao: w=50, h=50
-- entrada: w=75, h=18
-- banheiro: w=60, h=60
-- iluminacao: w=35, h=35
-
-CAMADAS:
-- chao: pista_danca, entrada, banheiro
-- mobiliario: mesa_redonda, mesa_retangular, palco, buffet, cadeira, bar, dj
-- teto: decoracao, iluminacao
-
-Retorne SOMENTE JSON válido neste formato exato (sem markdown, sem texto fora do JSON):
-{
-  "briefing_estruturado": "resumo técnico em 2-3 frases",
-  "tipo_evento": "wedding|corporate|birthday|dinner|show|other",
-  "num_convidados": 100,
-  "layout_sugerido": "descrição do raciocínio espacial que você usou",
-  "restricoes_csp": ["restrição aplicada 1", "restrição aplicada 2"],
-  "elementos": [
-    {
-      "tipo": "palco",
-      "label": "Palco Principal",
-      "x": 500,
-      "y": 60,
-      "w": 200,
-      "h": 80,
-      "rotation": 0,
-      "layer": "mobiliario"
-    }
-  ]
-}
-
-REGRAS OBRIGATÓRIAS DE POSICIONAMENTO:
-- Todo elemento deve ter x, y, w, h numéricos
-- Nenhum elemento pode sair da área: x >= 50, y >= 50, x+w <= 1150, y+h <= 650
-- Elementos da mesma camada NÃO podem se sobrepor
-- Palco fica na borda oposta à entrada (geralmente topo)
-- Pista de dança fica central no espaço
-- Entrada fica na borda inferior (y próximo de 630)
-- Buffet afastado da entrada (distância mínima 150px)
-- Mesas ficam ao redor da pista de dança
-- Cadeiras ficam ao redor das mesas (pequenas, w=32, h=32)
-- Iluminação e decoração ficam no teto (layer: teto), espalhadas pelo espaço
-- Bar fica em lateral oposta ao buffet
-- Adapte completamente o layout ao tipo e contexto do evento descrito
-- Para casamentos: layout circular elegante
-- Para corporativos: layout linear e organizado
-- Para festas: layout dinâmico com pista central
-- Calcule posições precisas para cada elemento individualmente`;
-
-export async function processBriefingWithAI(rawText: string) {
-  const start = Date.now();
-
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-3.6-flash',
-    systemInstruction: SYSTEM_PROMPT,
-  });
-
-  const result = await model.generateContent(rawText);
-  const text = result.response.text().trim();
-  const clean = text.replace(/```json|```/g, '').trim();
-  const structured = JSON.parse(clean);
-  const processingTimeMs = Date.now() - start;
-
-  return { structured, processingTimeMs };
+import { z } from 'zod';
+import { elementSchema, layoutSchema } from './inputSchemas';
+import { validateLayout } from './validationService';
+const pipeline = require('../../research/pipeline.cjs');
+const spatial = z.object({ layout_sugerido:z.string(), restricoes_csp:z.array(z.string()), elementos:z.array(elementSchema).min(1).max(300) });
+export async function processBriefingWithAI(rawText: string, context: z.infer<typeof layoutSchema> & {guestCount:number;mode:string;autoRepair?:boolean}) {
+  const start=Date.now(), modelName=process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash';
+  const call=pipeline.createProvider({key:process.env.GEMINI_API_KEY,model:modelName});
+  const input={rawText,context};
+  const initial=await pipeline.generate('B',input,call);
+  const stages=[...initial.stages];
+  let selected=initial;
+  const before=pipeline.diagnose(initial.raw,context,{elementSchema,validateLayout});
+  const repair:{attempted:boolean;accepted:boolean;before:string[];after:string[];error:string|null}={attempted:false,accepted:false,before,after:before,error:null};
+  if(context.autoRepair) {
+    repair.attempted=true;
+    const revised=await pipeline.revise('D',input,initial,before,call); stages.push(...revised.stages);
+    const after=pipeline.diagnose(revised.raw,context,{elementSchema,validateLayout}); repair.after=after; repair.error=revised.error || null;
+    const valid=spatial.safeParse(pipeline.parse(revised.raw)).success;
+    // Accept only fully clean geometry/identity diagnostics. Never claim semantic correctness.
+    if(!revised.error && valid && !after.length) { selected=revised; repair.accepted=true; }
+  }
+  if(selected.error) throw new Error('AI_GENERATION_FAILED');
+  const proposal=spatial.parse(pipeline.parse(selected.raw));
+  const ids=proposal.elementos.map(e=>e.id);
+  if(ids.some(id=>!id?.trim()) || new Set(ids).size!==ids.length) throw new Error('AI_INVALID_IDS');
+  if(context.mode==='improve' && context.elements.some(old=>proposal.elementos.filter(e=>e.id===old.id&&e.type===old.type).length!==1)) throw new Error('AI_PRESERVATION_FAILED');
+  const brief=pipeline.parse(initial.stages[0]?.raw)||{};
+  const validation=validateLayout(proposal.elementos,context.canvasW,context.canvasH);
+  return {structured:{briefing_estruturado:brief.briefing_estruturado||rawText,num_convidados:context.guestCount,
+    requisitos:Array.isArray(brief.requisitos)?brief.requisitos:[],pendencias:Array.isArray(brief.pendencias)?brief.pendencias:[],
+    ...proposal,tipo_evento:'wedding',elementos:proposal.elementos.map(e=>({...e,tipo:e.type})),validation,repair,stages,promptVersion:pipeline.VERSION},
+    processingTimeMs:Date.now()-start,modelName};
 }

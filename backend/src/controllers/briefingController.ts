@@ -1,47 +1,23 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { z } from 'zod';
 import { processBriefingWithAI } from '../services/aiService';
-
-const prisma = new PrismaClient();
-
-export const processBriefing = async (req: Request, res: Response) => {
+import { layoutSchema } from '../services/inputSchemas';
+const prisma=new PrismaClient();
+const requestSchema=layoutSchema.extend({eventId:z.string(),rawText:z.string().trim().min(10).max(14000),mode:z.enum(['new','improve']).default('new'),autoRepair:z.boolean().default(false)});
+export const processBriefing=async(req:any,res:Response)=>{
+  const parsed=requestSchema.safeParse(req.body);
+  if(!parsed.success) return res.status(400).json({error:'Revise o briefing e as dimensões do salão.'});
   try {
-    const { eventId, rawText } = req.body;
-
-    let aiResponse;
-
-    if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'AIzaSy-COLE_SUA_CHAVE_AQUI') {
-      aiResponse = await processBriefingWithAI(rawText);
-    } else {
-      aiResponse = {
-        structured: {
-          briefing_estruturado: "Configure o GEMINI_API_KEY no .env para usar a IA real.",
-          tipo_evento: "wedding",
-          num_convidados: 120,
-          elementos: [
-            { tipo: "mesa_redonda",  quantidade: 14, prioridade: "alta",  obs: "8 pax por mesa" },
-            { tipo: "pista_danca",   quantidade: 1,  prioridade: "alta",  obs: "central" },
-            { tipo: "palco",         quantidade: 1,  prioridade: "alta",  obs: "banda ao vivo" },
-            { tipo: "buffet",        quantidade: 2,  prioridade: "media", obs: "lateral" },
-            { tipo: "bar",           quantidade: 1,  prioridade: "media", obs: "lateral direito" },
-            { tipo: "iluminacao",    quantidade: 4,  prioridade: "baixa", obs: "cantos" },
-            { tipo: "decoracao",     quantidade: 6,  prioridade: "baixa", obs: "borda superior" }
-          ],
-          layout_sugerido: "Palco ao fundo, pista central, mesas em círculo ao redor.",
-          restricoes_csp: ["Buffet afastado da entrada", "Pista sem sobreposição com mesas"]
-        },
-        processingTimeMs: 0
-      };
-    }
-
-    const briefing = await prisma.briefing.create({
-      data: { rawText, structured: aiResponse.structured, processingTimeMs: aiResponse.processingTimeMs, eventId }
-    });
-
-    res.json({ briefingId: briefing.id, structured: aiResponse.structured, processingTimeMs: aiResponse.processingTimeMs });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    const event=await prisma.event.findFirst({where:{id:parsed.data.eventId,userId:req.user.userId}});
+    if(!event) return res.status(404).json({error:'Evento não encontrado.'});
+    if(event.type!=='WEDDING'||event.guestCount<30||event.guestCount>150) return res.status(400).json({error:'Este protótipo atende casamentos com 30 a 150 convidados.'});
+    if(!process.env.GEMINI_API_KEY) return res.status(503).json({error:'Configure GEMINI_API_KEY no servidor para usar a IA.'});
+    const response=await processBriefingWithAI(parsed.data.rawText,{...parsed.data,guestCount:event.guestCount});
+    const briefing=await prisma.briefing.create({data:{eventId:event.id,rawText:parsed.data.rawText,
+      structured:response.structured as any,processingTimeMs:response.processingTimeMs,aiModel:response.modelName}});
+    res.json({briefingId:briefing.id,...response});
+  } catch {
+    res.status(502).json({error:'A IA não retornou uma proposta válida. Seu layout foi preservado. Tente novamente.'});
   }
 };

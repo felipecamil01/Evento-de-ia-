@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { validateLayout, LayoutElement } from '../services/validationService';
+import { validateLayout } from '../services/validationService';
+import { layoutSchema } from '../services/inputSchemas';
 
 const prisma = new PrismaClient();
 
@@ -35,34 +36,13 @@ export const createLayout = async (req: Request, res: Response) => {
 
 export const updateLayout = async (req: Request, res: Response) => {
   try {
-    const { elements, canvasW, canvasH } = req.body;
-
-    // First clear existing elements
-    await prisma.layoutElement.deleteMany({
-      where: { layoutId: req.params.id }
-    });
-
-    const layout = await prisma.layout.update({
-      where: { id: req.params.id },
-      data: {
-        canvasW,
-        canvasH,
-        elements: {
-          create: elements.map((el: any) => ({
-            type: el.type,
-            label: el.label,
-            x: el.x,
-            y: el.y,
-            w: el.w,
-            h: el.h,
-            rotation: el.rotation || 0,
-            layer: el.layer,
-            color: el.color,
-            order: el.order || 0
-          }))
-        }
-      },
-      include: { elements: true }
+    const parsed = layoutSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({error:'Layout inválido. Revise dimensões e elementos.'});
+    const {elements,canvasW,canvasH}=parsed.data;
+    const layout = await prisma.$transaction(async tx => {
+      await tx.layoutElement.deleteMany({where:{layoutId:req.params.id}});
+      return tx.layout.update({where:{id:req.params.id},data:{canvasW,canvasH,isValidated:false,version:{increment:1},
+        elements:{create:elements.map(({id,...el})=>el)}},include:{elements:true}});
     });
     res.json(layout);
   } catch (error) {

@@ -1,0 +1,44 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> test
+> npm run build && node --test tests/*.test.cjs
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> build
+> tsc
+
+✔ layout lookup is scoped to authenticated owner (1.006972ms)
+✔ unowned layout is rejected before controller (0.168765ms)
+✔ new layout checks event owner (0.772398ms)
+✔ preview rejects malformed request before network (1.387058ms)
+✔ valid preview without credentials is explicit 503 (2.385097ms)
+✔ revisão recusada preserva proposta inicial (4.889123ms)
+✔ revisão válida corrige conflito e registra a tentativa (2.34088ms)
+✔ modo improve rejeita ids duplicados (1.067735ms)
+✔ sem revisão opcional há somente duas chamadas (0.719377ms)
+✔ valid arrangement (1.558557ms)
+✔ empty is not a completed arrangement (0.130908ms)
+✔ reject invalid input before save (2.243332ms)
+✔ invalid canvas (0.176708ms)
+✔ rotation can push a rectangle out of room (0.172862ms)
+✔ rotated overlap is detected (0.172351ms)
+✔ touching edges is not overlap (0.192091ms)
+✔ furniture cannot obstruct the dance floor (0.208626ms)
+✔ entrance cannot be obstructed (0.247915ms)
+✔ missing entrance fails (0.279914ms)
+✔ ceiling may overlap furniture (0.257039ms)
+✔ reject arbitrary remote image URLs (0.483802ms)
+✔ image prompt includes actual positions and rotation (0.195045ms)
+✔ extract REST generated image (0.881653ms)
+✔ text response is not disguised as an image (0.124388ms)
+✔ provider contract sends reference PNG and requests landscape (1.057229ms)
+✔ non-finite rotation is rejected (0.300555ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 99.062098

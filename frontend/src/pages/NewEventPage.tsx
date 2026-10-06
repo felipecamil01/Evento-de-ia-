@@ -36,7 +36,8 @@ export const NewEventPage = () => {
           <ArrowLeft size={20} /> Voltar
         </Link>
         <div className="bg-sidebar p-8 rounded-lg border border-border">
-          <h2 className="text-2xl font-bold mb-6 text-primary">Novo Evento</h2>
+          <h2 className="text-2xl font-bold mb-6 text-primary">Nova recepção de casamento</h2>
+          <p className="text-textSecondary mb-6">Planeje uma recepção em salão fechado, com 30 a 150 convidados.</p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm text-textSecondary mb-1">Nome do Evento</label>
@@ -57,17 +58,12 @@ export const NewEventPage = () => {
                   className="w-full bg-background border border-border p-2 rounded text-textPrimary focus:outline-none focus:border-primary"
                 >
                   <option value="WEDDING">Casamento</option>
-                  <option value="CORPORATE">Corporativo</option>
-                  <option value="BIRTHDAY">Aniversário</option>
-                  <option value="DINNER">Jantar</option>
-                  <option value="SHOW">Show</option>
-                  <option value="OTHER">Outro</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm text-textSecondary mb-1">Convidados</label>
                 <input
-                  type="number"
+                  type="number" min={30} max={150}
                   value={formData.guestCount}
                   onChange={(e) => setFormData({...formData, guestCount: parseInt(e.target.value) || 0})}
                   className="w-full bg-background border border-border p-2 rounded text-textPrimary focus:outline-none focus:border-primary"

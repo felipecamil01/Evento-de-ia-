@@ -1,0 +1,611 @@
+[
+  {
+    "id": "C01",
+    "description": "Planta simples válida",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": true
+  },
+  {
+    "id": "C02",
+    "description": "Planta vazia",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [],
+    "expectedValid": false
+  },
+  {
+    "id": "C03",
+    "description": "Entrada ausente",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C04",
+    "description": "Mesa fora à esquerda",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": -1,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C05",
+    "description": "Mesa fora à direita",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 750,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C06",
+    "description": "Mesa fora acima",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": -1,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C07",
+    "description": "Mesa fora abaixo",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 480,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C08",
+    "description": "Mesas coincidentes",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa 2",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C09",
+    "description": "Mesas encostadas",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 180,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": true
+  },
+  {
+    "id": "C10",
+    "description": "Mesas separadas",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 250,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": true
+  },
+  {
+    "id": "C11",
+    "description": "Entrada obstruída",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 350,
+        "y": 460,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C12",
+    "description": "Pista obstruída",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      },
+      {
+        "type": "pista_danca",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "chao"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C13",
+    "description": "Luz sobre mesa em outra camada",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      },
+      {
+        "type": "iluminacao",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "teto"
+      }
+    ],
+    "expectedValid": true
+  },
+  {
+    "id": "C14",
+    "description": "Rotação válida",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 250,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 90,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": true
+  },
+  {
+    "id": "C15",
+    "description": "Rotação sai do salão",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 0,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 90,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C16",
+    "description": "Largura zero",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 0,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C17",
+    "description": "Altura negativa",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": -5,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C18",
+    "description": "Canvas inválido",
+    "canvasW": 0,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  },
+  {
+    "id": "C19",
+    "description": "Objeto na borda direita",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 720,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": true
+  },
+  {
+    "id": "C20",
+    "description": "Sobreposição parcial",
+    "canvasW": 800,
+    "canvasH": 500,
+    "elements": [
+      {
+        "type": "entrada",
+        "label": "Entrada",
+        "x": 350,
+        "y": 480,
+        "w": 80,
+        "h": 20,
+        "rotation": 0,
+        "layer": "chao"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 100,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      },
+      {
+        "type": "mesa_retangular",
+        "label": "Mesa",
+        "x": 170,
+        "y": 100,
+        "w": 80,
+        "h": 50,
+        "rotation": 0,
+        "layer": "mobiliario"
+      }
+    ],
+    "expectedValid": false
+  }
+]

@@ -21,7 +21,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, isSelecte
     }
   }, [isSelected]);
 
-  const isCircle = element.type.includes('redonda') || element.type === 'pista_danca' && element.w === element.h && element.type !== 'pista_danca'; // Let's simplify: mesa_redonda is a circle
+
 
   const isMesaRedonda = element.type === 'mesa_redonda';
 
@@ -44,7 +44,7 @@ export const CanvasElement: React.FC<CanvasElementProps> = ({ element, isSelecte
           });
           saveHistory();
         }}
-        onTransformEnd={(e) => {
+        onTransformEnd={() => {
           const node = shapeRef.current;
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();

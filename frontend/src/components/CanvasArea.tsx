@@ -7,9 +7,19 @@ export const CanvasArea = () => {
   const { layout, addElement, activeLayer, saveHistory } = useLayoutStore();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(1);
+  useEffect(() => {
+    const parent=containerRef.current?.parentElement;
+    if(!parent || !layout)return;
+    const fit=()=>setZoom(Math.max(0.2,Math.min(1,(parent.clientWidth-64)/layout.canvasW,(parent.clientHeight-64)/layout.canvasH)));
+    const observer=new ResizeObserver(fit);observer.observe(parent);fit();
+    return ()=>observer.disconnect();
+  },[layout?.id,layout?.canvasW,layout?.canvasH]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.matches('input,textarea,select') || target.isContentEditable) return;
       if (e.key === 'Delete' && selectedId) {
         useLayoutStore.getState().setElements(
           useLayoutStore.getState().layout!.elements.filter(el => el.id !== selectedId)
@@ -34,8 +44,8 @@ export const CanvasArea = () => {
     if (data) {
       const parsed = JSON.parse(data);
       const rect = stageRef.getBoundingClientRect();
-      const x = e.clientX - rect.left - parsed.defaultW / 2;
-      const y = e.clientY - rect.top - parsed.defaultH / 2;
+      const x = (e.clientX - rect.left) / zoom - parsed.defaultW / 2;
+      const y = (e.clientY - rect.top) / zoom - parsed.defaultH / 2;
 
       addElement({
         type: parsed.type,
@@ -92,21 +102,23 @@ export const CanvasArea = () => {
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       className="shadow-2xl ring-1 ring-border bg-background relative"
-      style={{ width: layout.canvasW, height: layout.canvasH }}
+      style={{ width: layout.canvasW * zoom, height: layout.canvasH * zoom }}
     >
       <Stage
-        width={layout.canvasW}
-        height={layout.canvasH}
+        width={layout.canvasW * zoom}
+        height={layout.canvasH * zoom}
+        scaleX={zoom} scaleY={zoom}
         onMouseDown={checkDeselect}
         onTouchStart={checkDeselect}
       >
         <Layer>
+          <Rect width={layout.canvasW} height={layout.canvasH} fill="#18181c" listening={false} />
           {gridLines}
           {/* Space boundaries (M=38px dashed border) */}
           <Rect
-            x={38} y={38}
-            width={layout.canvasW - 76}
-            height={layout.canvasH - 76}
+            x={1} y={1}
+            width={layout.canvasW - 2}
+            height={layout.canvasH - 2}
             stroke="#444"
             strokeWidth={2}
             dash={[10, 10]}

@@ -17,14 +17,14 @@ const ELEMENTS = [
 ];
 
 export const Sidebar = () => {
-  const { activeLayer, setActiveLayer, addElement, saveHistory } = useLayoutStore();
+  const { activeLayer, setActiveLayer,  } = useLayoutStore();
 
   const handleDragStart = (e: React.DragEvent, el: any) => {
     e.dataTransfer.setData('element', JSON.stringify(el));
   };
 
   return (
-    <div className="w-64 bg-sidebar border-r border-border h-[calc(100vh-64px)] overflow-y-auto p-4 flex flex-col">
+    <div className="w-64 shrink-0 bg-sidebar border-r border-border h-full overflow-y-auto p-4 flex flex-col">
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-primary">
         <Layers size={20} /> Camadas
       </h2>
