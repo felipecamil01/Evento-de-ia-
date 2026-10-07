@@ -4,7 +4,7 @@ Felipe Jacinto Camilo; Douglas Lopes; Ruminiki Pavei Schmoeller.
 
 ## RESUMO
 
-Introdução. A conversão de briefings em layouts exige interpretar quantidades e relações espaciais, além de controlar inconsistências geométricas. Objetivo. Desenvolver o EventIA e investigar os efeitos da geração em duas etapas e da revisão com diagnóstico automático no atendimento a requisitos de recepções de casamento. Metodologia. Pesquisa aplicada, quantitativa e experimental computacional, com 30 cenários sintéticos, três repetições por cenário e duas comparações pareadas: geração direta versus geração em duas etapas; revisão genérica versus revisão orientada por diagnóstico. Um avaliador independente verifica critérios previamente definidos. Resultados. A verificação local aprovou 26 testes do sistema, 67 testes do protocolo e 20 casos de regressão geométrica. A coleta com o modelo de linguagem permanece pendente, sem resultados empíricos para confirmar as hipóteses. Conclusão. O protótipo e a infraestrutura de avaliação foram implementados e verificados nos casos examinados. Sua eficácia na geração e revisão de layouts deverá ser estabelecida pela coleta comparativa, com registro de falhas, regressões e consumo, sem extrapolação para desempenho humano ou segurança física.
+Introdução. A conversão de briefings em layouts exige interpretar quantidades e relações espaciais, além de controlar inconsistências geométricas. Objetivo. Desenvolver o EventIA e investigar os efeitos da geração em duas etapas e da revisão com diagnóstico automático no atendimento a requisitos de recepções de casamento. Metodologia. Pesquisa aplicada, quantitativa e experimental computacional, com avaliação prevista em 30 cenários sintéticos, três repetições por cenário e duas comparações pareadas: geração direta versus geração em duas etapas; revisão genérica versus revisão orientada por diagnóstico. Um avaliador independente verificará critérios previamente definidos. Resultados. A coleta e a análise dos dados ainda serão realizadas; esta versão apresenta o protocolo de avaliação, sem resultados experimentais. Conclusão. O trabalho apresenta o protótipo e o delineamento da pesquisa para apreciação do orientador. Sua eficácia na geração e revisão de layouts deverá ser estabelecida pela coleta comparativa, com registro de falhas, regressões e consumo, sem extrapolação para desempenho humano ou segurança física.
 
 Palavras-chave: inteligência artificial; layouts bidimensionais; avaliação computacional; verificação de restrições; engenharia de software.
 
@@ -42,7 +42,7 @@ A lacuna operacional abordada é a comparação controlada desses componentes em
 
 A pesquisa é aplicada quanto à natureza, exploratória e comparativa quanto aos objetivos, quantitativa quanto à abordagem e experimental computacional quanto aos procedimentos. Os objetos observados são respostas do software a cenários sintéticos. A execução dos comandos pelo pesquisador constitui operação do instrumento, sem avaliação de seu desempenho pessoal.
 
-Os objetivos específicos são delimitar o catálogo e os requisitos; implementar geração direta, geração em duas etapas e duas modalidades de revisão; construir um corpus versionado com testemunhas de viabilidade; verificar um avaliador independente; comparar sucesso integral e fração de critérios violados; e registrar falhas, regressões, duração e consumo. Nesta versão, o desenvolvimento e a verificação offline estão concluídos nos casos descritos, enquanto a coleta comparativa com o provedor permanece pendente.
+Os objetivos específicos são delimitar o catálogo e os requisitos; implementar geração direta, geração em duas etapas e duas modalidades de revisão; construir um corpus versionado com testemunhas de viabilidade; verificar um avaliador independente; comparar sucesso integral e fração de critérios violados; e registrar falhas, regressões, duração e consumo. Nesta versão, apresenta-se o protótipo e o planejamento da avaliação; a coleta e a análise dos dados permanecem como etapas a realizar.
 
 ### 3.2 Duas hipóteses
 
@@ -107,41 +107,27 @@ O protocolo foi reformulado para utilizar exclusivamente briefings, salões e ob
 
 ## 4. RESULTADOS E DISCUSSÃO
 
-### 4.1 Implementação e verificação concluídas
+### 4.1 Avaliação a realizar
 
-Em 6 de outubro de 2026, foram compilados o backend e o frontend e executadas as verificações locais apresentadas na Tabela 1. A suíte do sistema inclui geometria, esquema, controle de proprietário, contrato simulado de imagem e comportamento da nova revisão textual. A suíte do protocolo inclui 30 verificações associadas a H1, 30 associadas a H2 e sete verificações gerais do executor, avaliação e isolamento de condições.
+A coleta dos dados experimentais ainda não foi realizada. Esta seção será preenchida após a execução do protocolo apresentado em Materiais e Métodos, com os resultados das duas comparações, as medidas de incerteza e a discussão das hipóteses. Nesta versão para apreciação do orientador, não são apresentados valores de desempenho, tabelas de resultados ou conclusões empíricas.
 
-TABELA 1: Evidências efetivamente obtidas nesta revisão.
+Serão examinados o sucesso integral dos layouts, a fração de critérios violados, as falhas de geração, as violações introduzidas pelas revisões e o consumo de recursos. Os resultados serão apresentados por cenário e por condição experimental, incluindo ocorrências desfavoráveis às hipóteses.
 
-| Verificação | Resultado | Alcance |
-| --- | --- | --- |
-| Testes do sistema | 26 de 26 aprovados | Comportamentos automatizados com dependências simuladas |
-| Testes do protocolo | 67 de 67 aprovados | Corpus, avaliador e controles experimentais |
-| Regressão geométrica | 20 de 20 concordantes | Casos conhecidos do validador |
-| Compilações | Backend e frontend aprovados | Construção dos artefatos de software |
-| Coleta real de H1 e H2 | Não executada nesta revisão | Efeitos e intervalos ainda indisponíveis |
+### 4.2 Critérios para discussão dos resultados
 
-Fonte: Registros de execução local do projeto (2026).
-
-As testemunhas dos 30 cenários foram aceitas pelo avaliador independente e pelo diagnóstico geométrico. Mutações conhecidas, como ausência de buffet, posição fora do salão, ids duplicados e alteração de dimensão, foram rejeitadas nos testes correspondentes. Os ramos C/D preservaram o mesmo ponto de partida, e a condição C não recebeu o campo de diagnóstico. Esses resultados sustentam o funcionamento dos controles examinados, sem provar completude dos validadores.
-
-A compilação do frontend apresentou aviso de tamanho do pacote principal. Esse aviso não impediu a construção, mas indica oportunidade de otimização de carregamento. O PostgreSQL e as integrações externas reais não foram exercitados nesta revisão. Não havia chave Gemini configurada no ambiente de execução; por isso, nenhuma resposta real foi utilizada para estimar Δ1 ou Δ2.
-
-### 4.2 Discussão e limites das evidências
-
-A separação entre proposta estruturada e verificação aproxima o protótipo da linha de planejamento visual discutida por Feng et al. (2023) e Leng et al. (2023). Entretanto, aprovar testes de software não equivale a reproduzir o desempenho desses estudos. O resultado disponível é a implementação de um instrumento de comparação; a eficácia do modelo continua como questão empírica.
+A separação entre proposta estruturada e verificação aproxima o protótipo da linha de planejamento visual discutida por Feng et al. (2023) e Leng et al. (2023). A comparação com esses estudos deverá considerar as diferenças de domínio, corpus e métricas. A eficácia do modelo permanece como questão a investigar, sem pressupor reprodução do desempenho publicado pelos autores.
 
 A comparação C/D torna operacional a distinção entre oportunidade de refinar e acesso a informação externa, motivada por Madaan et al. (2023) e Huang et al. (2024). O registro de violações introduzidas permite identificar revisões prejudiciais. Contudo, o diagnóstico não contém todas as regras semânticas do avaliador; erros de quantidade ou de relação podem persistir mesmo quando a geometria é aprovada.
 
 Há riscos de viés decorrentes da autoria do corpus, da simplicidade das plantas e da familiaridade do desenvolvedor com seus critérios. O congelamento anterior à coleta impede ajustes oportunistas após observar resultados, mas não elimina essas limitações. A ausência de rotação no benchmark também restringe o alcance experimental, embora o editor permita rotações. Sem escala métrica, obstáculos reais e análise de circulação, o estudo não sustenta uso como projeto físico certificado.
 
-Para concluir a avaliação, deverão ser coletadas as respostas reais e apresentados Δ1, Δ2, seus intervalos, resultados por cenário e custos. Resultados nulos, desfavoráveis ou inconclusivos integrarão a discussão. Não se atribuirá confirmação das hipóteses aos 30 testes offline de cada comparação, pois eles utilizam respostas conhecidas e simuladas.
+Para concluir a avaliação, deverão ser coletadas as respostas reais e apresentados Δ1, Δ2, seus intervalos, resultados por cenário e custos. Resultados nulos, desfavoráveis ou inconclusivos integrarão a discussão. As hipóteses somente serão discutidas à luz dos dados obtidos na coleta experimental.
 
 ## 5. CONSIDERAÇÕES FINAIS
 
-O EventIA foi reformulado como protótipo de geração e revisão de layouts 2D com avaliação exclusivamente computacional. Foram implementadas duas estratégias de geração, dois ramos de revisão, um corpus de 30 cenários e um avaliador independente. As verificações locais aprovaram 26 testes do sistema, 67 do protocolo e 20 casos de regressão geométrica, estabelecendo evidência limitada aos comportamentos examinados.
+O EventIA foi reformulado como protótipo de geração e revisão de layouts 2D com avaliação exclusivamente computacional. Foram implementadas duas estratégias de geração, dois ramos de revisão, um corpus de 30 cenários e um avaliador independente. A avaliação desses componentes será realizada conforme o protocolo apresentado.
 
-O objetivo de desenvolvimento foi atendido no nível de protótipo, e o objetivo de avaliação encontra-se parcialmente concluído. H1 e H2 permanecem sem confirmação ou rejeição empírica, pois a coleta real ainda não foi executada. A contribuição disponível é a infraestrutura reproduzível para investigar esses efeitos, com distinção entre sucesso do software e qualidade das respostas da IA.
+O trabalho apresenta o desenvolvimento no nível de protótipo, enquanto a avaliação experimental permanece a realizar. H1 e H2 permanecem sem confirmação ou rejeição empírica, pois a coleta real ainda não foi executada. A contribuição proposta é um procedimento reproduzível para investigar esses efeitos, cujo alcance deverá ser estabelecido pelos dados da pesquisa.
 
 Como continuidade, a pesquisa deverá executar o protocolo congelado, analisar falhas e regressões e incorporar os resultados ao artigo. Ampliação independente do corpus, outras versões de modelo, escala física e restrições de circulação constituem extensões futuras. Estudos de experiência humana exigem outra metodologia. O alcance das conclusões será definido pelas evidências, sem promessas de estabilização a partir de 30 cenários ou de melhoria universal da abordagem.
 
