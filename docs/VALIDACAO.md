@@ -1,5 +1,3 @@
-> Registro histórico da revisão anterior. Para os resultados desta entrega, consulte [VALIDACAO_ATUAL.md](VALIDACAO_ATUAL.md).
-
 # Verificação da revisão
 
 Data da revisão: 18 de setembro de 2026.

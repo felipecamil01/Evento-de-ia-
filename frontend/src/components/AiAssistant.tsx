@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { useLayoutStore } from '../store/useLayoutStore';
@@ -14,7 +14,7 @@ interface RoomConfig {
 export const AiAssistant = ({ eventId }: { eventId: string }) => {
   const [briefing, setBriefing] = useState('');
   const [loading, setLoading] = useState(false);
-  const [autoRepair, setAutoRepair] = useState(false);
+  const generationLock = useRef(false);
   const [showRoomConfig, setShowRoomConfig] = useState(false);
   const [roomConfig, setRoomConfig] = useState<RoomConfig>({
     widthM: 20,
@@ -48,7 +48,8 @@ export const AiAssistant = ({ eventId }: { eventId: string }) => {
   };
 
   const handleGenerate = async (mode: 'new' | 'improve' = 'new') => {
-    if (loading || !briefing.trim() || !layout) return;
+    if (generationLock.current || loading || !briefing.trim() || !layout) return;
+    generationLock.current = true;
 
     setChat(prev => [...prev, { role: 'user', text: briefing + (mode === 'improve' ? ' (melhorar atual)' : '') }]);
 
@@ -62,15 +63,10 @@ export const AiAssistant = ({ eventId }: { eventId: string }) => {
     };
 
     try {
-      // Para modo melhoria, envia os elementos atuais junto
-      const currentElementsContext = mode === 'improve' && layout.elements.length > 0
-        ? `\n\n[ELEMENTOS JÁ NO CANVAS - mantenha e melhore posições se necessário]\n${JSON.stringify(layout.elements.map(e => ({ tipo: e.type, label: e.label, x: e.x, y: e.y, w: e.w, h: e.h, layer: e.layer })))}`
-        : '';
-
       const res = await api.post('/briefing/process', {
         eventId,
-        rawText: briefing + buildRoomContext() + currentElementsContext,
-        mode, autoRepair,
+        rawText: briefing + buildRoomContext(),
+        mode,
         canvasW: layout.canvasW, canvasH: layout.canvasH, elements: layout.elements,
       });
       const current = useLayoutStore.getState().layout;
@@ -101,8 +97,7 @@ export const AiAssistant = ({ eventId }: { eventId: string }) => {
 
       const notices = [...(structured.pendencias || []), ...(structured.validation?.issues || [])];
       const reply =
-        `✦ ${mode === 'improve' ? 'Proposta revisada' : 'Layout gerado'} em ${res.data.processingTimeMs}ms!\n\n` +
-        (structured.repair?.attempted ? (structured.repair.accepted ? 'Revisão automática aplicada. Confira o atendimento ao seu pedido.\n\n' : 'A revisão automática não foi aplicada; confira a proposta inicial.\n\n') : '') +
+        `✦ ${mode === 'improve' ? 'Layout melhorado' : 'Layout gerado'} em ${res.data.processingTimeMs}ms!\n\n` +
         `📋 ${structured.briefing_estruturado}\n\n` +
         (notices.length ? `Revisão necessária:\n${notices.join('\n')}\n\n` : '') +
         `🏛 ${structured.tipo_evento} • ${structured.num_convidados} convidados\n` +
@@ -116,9 +111,11 @@ export const AiAssistant = ({ eventId }: { eventId: string }) => {
       setChat(prev => [...prev, { role: 'ai', text: reply }]);
       toast.success(`${newElements.length} elementos posicionados pela IA!`);
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Erro ao processar briefing');
-      setChat(prev => [...prev, { role: 'ai', text: '❌ Erro ao gerar layout. Tente novamente.' }]);
+      const message = error.response?.data?.error || 'Não foi possível processar o briefing. Verifique a conexão com o servidor e tente novamente.';
+      toast.error(message, { duration: 7000 });
+      setChat(prev => [...prev, { role: 'ai', text: `❌ ${message}` }]);
     } finally {
+      generationLock.current = false;
       setLoading(false);
     }
   };
@@ -146,10 +143,6 @@ export const AiAssistant = ({ eventId }: { eventId: string }) => {
         </button>
       </div>
 
-      <label className="px-3 py-2 text-xs text-textSecondary flex gap-2 items-start">
-        <input type="checkbox" checked={autoRepair} disabled={loading} onChange={e => setAutoRepair(e.target.checked)} />
-        Revisar conflitos automaticamente (uma tentativa adicional)
-      </label>
       {/* Room Config Panel */}
       {showRoomConfig && (
         <div className="bg-background border-b border-border p-3 space-y-3">

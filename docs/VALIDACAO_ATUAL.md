@@ -1,15 +1,10 @@
-# Verificação realizada em 6 de outubro de 2026
+# Verificação atual do EventIA
 
-| Procedimento | Resultado |
-| --- | --- |
-| `npm test` no backend | 26 testes aprovados |
-| `npm run research:verify` | 67 testes aprovados: 30 relativos a H1, 30 a H2 e 7 gerais |
-| `npm run benchmark` | 20/20 casos concordantes |
-| `npm run build` no frontend | Aprovado; aviso de pacote principal maior que 500 kB |
-| Prisma Client | Gerado com sucesso |
-| Integração com PostgreSQL real | Não executada nesta revisão |
-| Coleta de H1/H2 com modelo real | Pendente; chave Gemini ausente no ambiente |
-
-Os testes de IA usam respostas simuladas. Os 60 testes associados às hipóteses verificam corpus e protocolo, não confirmam H1/H2. A coleta principal executará 30 cenários por hipótese, três repetições e até 450 chamadas reais. Consulte [PROTOCOLO](PROTOCOLO.md).
-
-Registros de saída dos comandos estão em `docs/validation/`. Os relatórios geométricos com data anterior são históricos; a reexecução desta revisão está em `backend/reports/2026-10-06T18-23-08-568Z/`.
+- Backend: compilação TypeScript aprovada; 30 testes automatizados aprovados.
+- Teste de resiliência: a lógica de uma etapa de texto não ultrapassa três chamadas ao provedor, mesmo com vários fallbacks configurados.
+- Teste de concorrência: uma segunda solicitação simultânea do mesmo usuário é rejeitada sem iniciar outra chamada à IA.
+- Frontend: verificação TypeScript (`tsc -b`) aprovada.
+- Build Vite: não concluído neste ambiente Linux porque as dependências originalmente incluídas no ZIP não contêm o pacote opcional de Rollup para Linux. A entrega não inclui `node_modules`; o script `TESTAR_EVENTIA.bat` reinstala as dependências no Windows antes de compilar.
+- API Gemini real, chave paga, PostgreSQL e Docker Compose não foram testados nesta revisão. Os testes da API usam mocks e não consomem quota.
+- O controle de concorrência é em memória, válido para uma instância local do Node.js. Para múltiplas instâncias, é necessário um mecanismo compartilhado.
+- O benchmark geométrico offline não representa uma avaliação da qualidade da IA, experiência humana ou segurança física.

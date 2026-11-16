@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { validateLayout } from '../services/validationService';
 import { layoutSchema } from '../services/inputSchemas';
+import { processBriefingWithAI } from '../services/aiService';
 
 const prisma = new PrismaClient();
 
@@ -90,5 +91,44 @@ export const exportLayout = async (req: Request, res: Response) => {
     res.json(layout);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const generateAILayout = async (req: Request, res: Response) => {
+  try {
+    const { rawText, mode, guestCount } = req.body;
+    
+    const layout = await prisma.layout.findUnique({
+      where: { id: req.params.id },
+      include: { elements: true }
+    });
+    if (!layout) return res.status(404).json({ error: 'Layout não encontrado' });
+
+    const aiResult = await processBriefingWithAI(rawText, {
+      ...layout,
+      elements: layout.elements as any,
+      mode: mode || 'create',
+      guestCount: guestCount || 60
+    });
+
+    const updatedLayout = await prisma.$transaction(async tx => {
+      await tx.layoutElement.deleteMany({ where: { layoutId: layout.id } });
+      return tx.layout.update({
+        where: { id: layout.id },
+        data: {
+          version: { increment: 1 },
+          isValidated: aiResult.structured.validation.passed,
+          elements: { 
+            create: aiResult.structured.elementos.map(({ id, ...el }) => el) 
+          }
+        },
+        include: { elements: true }
+      });
+    });
+
+    res.json({ layout: updatedLayout, aiMetadata: aiResult });
+  } catch (error: any) {
+    console.error("Erro na IA:", error);
+    res.status(500).json({ error: error.message || 'Erro interno ao processar IA' });
   }
 };

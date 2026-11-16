@@ -8,10 +8,7 @@
     "db:seed": "ts-node prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "npm run build && node --test tests/*.test.cjs",
-    "benchmark": "npm run build && node scripts/benchmark.cjs",
-    "research:verify": "npm run build && node --test research/protocol.test.cjs",
-    "research:run": "npm run build && node research/run.cjs",
-    "research:analyze": "node research/analyze.cjs"
+    "benchmark": "npm run build && node scripts/benchmark.cjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

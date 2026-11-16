@@ -2,7 +2,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {validateLayout}=require('../dist/services/validationService');
 const {layoutSchema,previewSchema}=require('../dist/services/inputSchemas');
-const {previewPrompt,extractImage,generatePreview}=require('../dist/services/previewService');
+const {previewPrompt,extractImage,generatePreview,PreviewProviderError}=require('../dist/services/previewService');
 const entry={type:'entrada',label:'Entrada',x:200,y:480,w:70,h:20,rotation:0,layer:'chao',order:0};
 const table={type:'mesa_retangular',label:'Mesa',x:100,y:100,w:100,h:50,rotation:0,layer:'mobiliario',order:1};
 const input={canvasW:800,canvasH:500,elements:[entry,table],style:'classico',lighting:'dia',planImage:'data:image/png;base64,aGVsbG8='};
@@ -25,6 +25,13 @@ test('provider contract sends reference PNG and requests landscape',async()=>{
  const original=global.fetch;
  global.fetch=async(url,options)=>{const body=JSON.parse(options.body);assert.equal(body.response_format.aspect_ratio,'16:9');assert.equal(body.input[1].mime_type,'image/png');assert.equal(body.store,false);return {ok:true,json:async()=>({steps:[{content:[{type:'image',mime_type:'image/png',data:'abc'}]}]})};};
  try{assert.equal((await generatePreview(input)).image,'data:image/png;base64,abc');}finally{global.fetch=original;}
+});
+test('image provider errors retain quota status for actionable handling',async()=>{
+ const original=global.fetch,originalKey=process.env.GEMINI_API_KEY;
+ process.env.GEMINI_API_KEY='test-key';
+ global.fetch=async()=>({ok:false,status:429,json:async()=>({error:{status:'RESOURCE_EXHAUSTED',message:'Free Tier limit: 0'}})});
+ try{await assert.rejects(generatePreview(input),error=>error instanceof PreviewProviderError&&error.status===429&&error.providerStatus==='RESOURCE_EXHAUSTED'&&/Free Tier/.test(error.message));}
+ finally{global.fetch=original;if(originalKey===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=originalKey;}
 });
 
 test('non-finite rotation is rejected',()=>assert.equal(validateLayout([entry,{...table,rotation:NaN}],800,500).passed,false));

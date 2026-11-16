@@ -1,5 +1,17 @@
 import { z } from 'zod';
 import { previewSchema } from './inputSchemas';
+
+export class PreviewProviderError extends Error {
+  constructor(
+    readonly status: number,
+    readonly providerStatus: string | undefined,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'PreviewProviderError';
+  }
+}
+
 export function previewPrompt(input:z.infer<typeof previewSchema>) {
   return `Crie UMA visualização conceitual fotorrealista horizontal de uma recepção de casamento em salão fechado.
   Use a planta PNG e a lista JSON como referências espaciais da MESMA cena. Perspectiva ampla a partir da entrada, levemente elevada.
@@ -28,8 +40,16 @@ export async function generatePreview(input:z.infer<typeof previewSchema>) {
       {type:'image',mime_type:'image/png',data:input.planImage.split(',')[1]}],
       response_format:{type:'image',aspect_ratio:'16:9',image_size:'1K'}})
   });
-  if(!response.ok) throw new Error(response.status===429?'RATE_LIMIT':'PROVIDER_ERROR');
-  const image=extractImage(await response.json());
+  const payload=await response.json();
+  if(!response.ok) {
+    const providerError=payload?.error;
+    throw new PreviewProviderError(
+      response.status,
+      typeof providerError?.status === 'string' ? providerError.status : undefined,
+      typeof providerError?.message === 'string' ? providerError.message : 'O provedor Gemini recusou a geração de imagem.',
+    );
+  }
+  const image=extractImage(payload);
   if(!image?.data || !['image/png','image/jpeg','image/webp'].includes(image.mime_type)) throw new Error('NO_IMAGE');
   return {image:`data:${image.mime_type};base64,${image.data}`,model,generatedAt:new Date().toISOString()};
 }

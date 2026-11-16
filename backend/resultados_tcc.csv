@@ -1,0 +1,31 @@
+Cenario,Convidados,Tempo_Seg,Extracao_Dados,Status_Geometrico,Elementos_Gerados
+Teste 1,150,4.75,Sim,Reprovado (Sobreposição),22
+Teste 2,80,2.58,Sim,Aprovado,14
+Teste 3,150,3.34,Sim,Aprovado,20
+Teste 4,60,2.87,Sim,Aprovado,12
+Teste 5,120,3.14,Sim,Aprovado,16
+Teste 6,150,4.24,Sim,Aprovado,18
+Teste 7,140,5.13,Sim,Reprovado (Sobreposição),19
+Teste 8,150,4.65,Sim,Aprovado,22
+Teste 9,150,4.20,Sim,Reprovado (Sobreposição),20
+Teste 10,150,4.14,Sim,Aprovado,18
+Teste 11,30,5.64,Sim,Aprovado,8
+Teste 12,40,5.44,Sim,Aprovado,11
+Teste 13,50,3.59,Sim,Aprovado,11
+Teste 14,20,5.60,Sim,Reprovado (Sobreposição),8
+Teste 15,15,3.79,Sim,Aprovado,4
+Teste 16,100,4.77,Sim,Aprovado,13
+Teste 17,120,5.58,Sim,Aprovado,18
+Teste 18,90,5.22,Sim,Aprovado,12
+Teste 19,110,5.14,Sim,Aprovado,17
+Teste 20,80,4.70,Sim,Aprovado,14
+Teste 21,150,4.28,Sim,Aprovado,19
+Teste 22,150,3.42,Sim,Aprovado,19
+Teste 23,100,4.51,Sim,Aprovado,17
+Teste 24,120,3.34,Sim,Reprovado (Sobreposição),16
+Teste 25,80,3.01,Sim,Aprovado,11
+Teste 26,130,2.64,Sim,Reprovado (Sobreposição),16
+Teste 27,140,5.59,Sim,Aprovado,19
+Teste 28,100,2.66,Sim,Aprovado,16
+Teste 29,90,5.22,Sim,Aprovado,13
+Teste 30,145,5.64,Sim,Aprovado,17
